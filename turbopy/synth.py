@@ -10,9 +10,11 @@ from .marcs import MARCSModel, interp_atmosphere
 
 from . import utils
 
-_lpoint_max = 100000 # hardcoded into turbospectrum, we might change this
+_lpoint_max = 1000000 # hardcoded into turbospectrum spectrum.inc file, adopt this to match
 _ERASESTR= "                                                                             "
-_TURBO_DIR_ = '/Users/iescala/Turbospectrum2019/exec-gfie-v19.1/'
+_TURBO_DIR_ = '/home/alexji/lib/Turbospectrum2019/exec-v19.1' #46s on a 5000-5500A test
+#_TURBO_DIR_ = '/home/alexji/lib/Turbospectrum2019/exec-gf-v19.1' #77s on a 5000-5500A test
+_TURBO_DIR_ = '/home/alexji/lib/Turbospectrum2019-ie/exec-v19.1-ie' #47s on a 5000-5500A test
 
 def run_synth(wmin, wmax, dwl, *args,
               linelist=None,
@@ -22,7 +24,7 @@ def run_synth(wmin, wmax, dwl, *args,
               modelopac=None,
               outfname=None, twd=None, verbose=False,
               costheta=1.0,isotopes={}, marcsfile=True,
-              spherical=False, Hlinelist=None,
+              Hlinelist=None,
 ):
     """
     Run a turbospectrum synthesis.
@@ -66,8 +68,8 @@ def run_synth(wmin, wmax, dwl, *args,
     """
 
     Nwl = np.ceil((wmax-wmin)/dwl)
-    if Nwl > _lpoint_max:
-        raise ValueError(f"Trying to synthesize {Nwl} > {_lpoint_max} wavelength points")
+    if Nwl >= _lpoint_max:
+        raise ValueError(f"Trying to synthesize {Nwl} >= {_lpoint_max} wavelength points")
 
     ## working directory
     if twd is None:
@@ -76,6 +78,8 @@ def run_synth(wmin, wmax, dwl, *args,
     ## Linelist
     if linelist is None:
         linelist = get_default_linelist(wmin, wmax)
+    elif isinstance(linelist, str):
+        linelist = TSLineList(os.path.abspath(linelist))
     else:
         assert isinstance(linelist, TSLineList)
     linelistfilenames = [linelist.get_fname()]
@@ -97,6 +101,8 @@ def run_synth(wmin, wmax, dwl, *args,
         raise ValueError("'isotopes=' input not understood, should be 'solar', 'arcturus', or a dictionary")
 
     ## Stellar atmosphere
+    ## I have a bunch of random wrapping to make extensions easier for the future
+    ## But it's overkill for now
     if atmosphere is not None:
         # The MARCS models need you to set vt separately
         assert vt is not None, vt
@@ -107,13 +113,15 @@ def run_synth(wmin, wmax, dwl, *args,
         Teff, logg, MH, aFe = atmosphere.Teff, atmosphere.logg, \
             atmosphere.MH, atmosphere.AM
     else:
+        # APJ Not tested but should work..
         assert Teff is not None, Teff
         assert logg is not None, logg
         assert MH is not None, MH
         assert vt is not None, vt
         atmosphere = interp_atmosphere(Teff, logg, MH, vt,
-                                       aFe, CFe, NFe, rFe, sFe)
-        atmosphere.writeto(os.path.join(twd, 'atm.mod'))
+                                       aFe, twd)
+        atmosphere = MARCSModel.load(atmosphere)
+        #atmosphere.writeto(os.path.join(twd, 'atm.mod'))
     modelfilename = atmosphere.get_fname()
 
     ## Abundances
@@ -134,7 +142,7 @@ def run_synth(wmin, wmax, dwl, *args,
                       atmosphere.AM,
                       abundances,
                       atmosphere.vt,
-                      spherical,
+                      atmosphere.spherical,
                       None,None,None,bsyn=False)
         # Run babsma
         sys.stdout.write('\r'+"Running Turbospectrum babsma_lu ...\r")
@@ -186,7 +194,7 @@ def run_synth(wmin, wmax, dwl, *args,
                   atmosphere.AM,
                   abundances, #indiv_abu,
                   None,
-                  spherical,
+                  atmosphere.spherical,
                   outfilename,
                   isotopes,
                   linelistfilenames,
