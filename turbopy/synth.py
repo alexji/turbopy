@@ -24,7 +24,7 @@ def run_synth(wmin, wmax, dwl, *args,
               modelopac=None,
               outfname=None, twd=None, verbose=False,
               costheta=1.0,isotopes={}, marcsfile=True,
-              Hlinelist=None,
+              Hlinelist=None,debug=False
 ):
     """
     Run a turbospectrum synthesis.
@@ -54,6 +54,10 @@ def run_synth(wmin, wmax, dwl, *args,
                   (a) if set to an existing filename: assume babsma_lu has already been run and use this continuous opacity in bsyn_lu
                   (b) if set to a non-existing filename: store the continuous opacity in this file
 
+       marcsfile= True
+                  Note: you currently need Ivanna Escala's version of Turbospectrum to parse the interpolated atmospheres
+                  https://github.com/iaescala/Turbospectrum2019
+
     LINELIST KEYWORDS:
           air= (True) if True, perform the synthesis in air wavelengths (affects the default Hlinelist, nothing else; output is in air if air, vacuum otherwise); set to False at your own risk, as Turbospectrum expects the linelist in air wavelengths!)
           Hlinelist= (None) Hydrogen linelists to use; can be set to the path of a linelist file or to the name of an APOGEE linelist; if None, then we first search for the Hlinedata.vac in the APOGEE linelist directory (if air=False) or we use the internal Turbospectrum Hlinelist (if air=True)
@@ -66,6 +70,8 @@ def run_synth(wmin, wmax, dwl, *args,
           save the output of bsyn_lu (spectrum) to outfname
 
     """
+
+    if debug: verbose=True
 
     Nwl = np.ceil((wmax-wmin)/dwl)
     if Nwl >= _lpoint_max:
@@ -254,8 +260,9 @@ def run_synth(wmin, wmax, dwl, *args,
     # Now read the output
     turboOut= np.loadtxt(outfilename)
     # Clean up
-    #os.remove(outfilename)
-    #os.rmdir(twd)
+    #if not debug:
+    #    os.remove(outfilename)
+    #    os.rmdir(twd)
     # Return wav, cont-norm, full spectrum
     return (turboOut[:,0],turboOut[:,1],turboOut[:,2])
 
