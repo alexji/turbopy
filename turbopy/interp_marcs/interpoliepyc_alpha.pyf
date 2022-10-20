@@ -1,0 +1,251 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module interpoliepyc_alpha ! in 
+    interface  ! in :interpoliepyc_alpha
+        subroutine interpolie(model1,model2,model3,model4,model5,model6,model7,model8,model9,model10,model11,model12,model13,model14,model15,model16,model1out,model2out,temp_ref,logg_ref,z_ref,a_ref,optimize) ! in :interpoliepyc_alpha:interpolie_modeles_alpha.f
+            character*256 intent(in) :: model1
+            character*256 intent(in) :: model2
+            character*256 intent(in) :: model3
+            character*256 intent(in) :: model4
+            character*256 intent(in) :: model5
+            character*256 intent(in) :: model6
+            character*256 intent(in) :: model7
+            character*256 intent(in) :: model8
+            character*256 intent(in) :: model9
+            character*256 intent(in) :: model10
+            character*256 intent(in) :: model11
+            character*256 intent(in) :: model12
+            character*256 intent(in) :: model13
+            character*256 intent(in) :: model14
+            character*256 intent(in) :: model15
+            character*256 intent(in) :: model16
+            character*256 intent(in) :: model1out
+            character*256 intent(in) :: model2out
+            real intent(in) :: temp_ref
+            real intent(in) :: logg_ref
+            real intent(in) :: z_ref
+            real intent(in) :: a_ref
+            logical intent(in) :: optimize
+        end subroutine interpolie
+    end interface 
+    function inf(tab) ! in :interpoliepyc_alpha
+        real dimension(17) :: tab
+        real :: inf
+    end function inf
+    function sup(tab) ! in :interpoliepyc_alpha
+        real dimension(17) :: tab
+        real :: sup
+    end function sup
+    subroutine blend_103(r,s,t,u,x0000,x0010,x0100,x0110,x1000,x1010,x1100,x1110,x0001,x0011,x0101,x0111,x1001,x1011,x1101,x1111,x) ! in :interpoliepyc_alpha
+        real :: r
+        real :: s
+        real :: t
+        real :: u
+        real :: x0000
+        real :: x0010
+        real :: x0100
+        real :: x0110
+        real :: x1000
+        real :: x1010
+        real :: x1100
+        real :: x1110
+        real :: x0001
+        real :: x0011
+        real :: x0101
+        real :: x0111
+        real :: x1001
+        real :: x1011
+        real :: x1101
+        real :: x1111
+        real :: x
+    end subroutine blend_103
+    subroutine extract_bin(file,teff,grav,metal,ndepth,xlr_ref,tau5,taur,temp,prese,presg,xit,rad,sph,kappa) ! in :interpoliepyc_alpha
+        character*256 :: file
+        real :: teff
+        real :: grav
+        real :: metal
+        integer :: ndepth
+        real :: xlr_ref
+        real dimension(200) :: tau5
+        real dimension(200) :: taur
+        real dimension(200) :: temp
+        real dimension(200) :: prese
+        real dimension(200) :: presg
+        real dimension(200) :: xit
+        real dimension(200) :: rad
+        logical :: sph
+        real dimension(200) :: kappa
+        real dimension(200) :: tau
+        real dimension(200) :: t
+        real dimension(200) :: z
+        real dimension(200) :: ptot
+        real dimension(200) :: prad
+        real dimension(200) :: pg
+        real dimension(200) :: pturb
+        real dimension(200) :: pe
+        real dimension(200) :: ro
+        real dimension(200) :: rr
+        real dimension(200) :: taus
+        real dimension(30) :: xlr
+        integer :: nlp
+        real dimension(200) :: xkapr
+        integer :: nlb
+        real dimension(155000) :: xlb
+        real dimension(155000) :: w
+        real dimension(155000) :: fluxme
+        real dimension(30,200) :: presmo
+        real dimension(200) :: ptio
+        real dimension(200) :: bppr
+        real dimension(200) :: bppt
+        real dimension(200) :: bpp
+        real dimension(200) :: bgg
+        real dimension(200) :: bzz
+        real dimension(200) :: bdd
+        real dimension(200) :: bvv
+        real dimension(200) :: bffc
+        real dimension(200) :: bppe
+        real dimension(200) :: btt
+        real dimension(200) :: btauln
+        integer :: nbtau
+        integer :: ibter
+        real dimension(200) :: erad
+        real :: radius
+        common /struct/ tau,t,z,ptot,prad,pg,pturb,pe,ro,rr,taus,xlr,nlp,xkapr
+        common /spectr/ nlb,xlb,w,fluxme
+        common /pressure/ presmo,ptio
+        common /binstruc/ bppr,bppt,bpp,bgg,bzz,bdd,bvv,bffc,bppe,btt,btauln,nbtau,ibter,erad
+        common /radius/ radius
+    end subroutine extract_bin
+    subroutine readmo(iarch,jtau,teff,g,metal,spherical) ! in :interpoliepyc_alpha
+        integer :: iarch
+        integer :: jtau
+        real :: teff
+        real :: g
+        real :: metal
+        logical :: spherical
+        real dimension(2202) :: dummy
+        real dimension(200) :: erad
+        real dimension(200) :: tau
+        real dimension(200) :: t
+        real dimension(200) :: z
+        real dimension(200) :: ptot
+        real dimension(200) :: prad
+        real dimension(200) :: pg
+        real dimension(200) :: pturb
+        real dimension(200) :: pe
+        real dimension(200) :: ro
+        real dimension(200) :: rr
+        real dimension(200) :: taus
+        real dimension(30) :: xlr
+        integer :: nlp
+        real dimension(200) :: xkapr
+        integer :: nlb
+        real dimension(155000) :: xlb
+        real dimension(155000) :: w
+        real dimension(155000) :: fluxme
+        real dimension(30,200) :: presmo
+        real dimension(200) :: ptio
+        real :: radius
+        common /binstruc/ dummy,erad
+        common /struct/ tau,t,z,ptot,prad,pg,pturb,pe,ro,rr,taus,xlr,nlp,xkapr
+        common /spectr/ nlb,xlb,w,fluxme
+        common /pressure/ presmo,ptio
+        common /radius/ radius
+    end subroutine readmo
+    subroutine extract_ascii(file,teff,grav,metal,alpha,ndepth,xlr_ref,tau5,taur,temp,prese,presg,xit,rad,sph,xkapr) ! in :interpoliepyc_alpha
+        character*256 :: file
+        real :: teff
+        real :: grav
+        real :: metal
+        real :: alpha
+        integer :: ndepth
+        real :: xlr_ref
+        real dimension(200) :: tau5
+        real dimension(200) :: taur
+        real dimension(200) :: temp
+        real dimension(200) :: prese
+        real dimension(200) :: presg
+        real dimension(200) :: xit
+        real dimension(200) :: rad
+        logical :: sph
+        real dimension(200) :: xkapr
+    end subroutine extract_ascii
+    subroutine common_depth_basis(tauresample,tau,nlinemod,nfile) ! in :interpoliepyc_alpha
+        real dimension(nlinemod) :: tauresample
+        real dimension(nlinemod,nfile),depend(nlinemod) :: tau
+        integer, optional,check(len(tauresample)>=nlinemod),depend(tauresample) :: nlinemod=len(tauresample)
+        integer, optional,check(shape(tau,1)==nfile),depend(tau) :: nfile=shape(tau,1)
+    end subroutine common_depth_basis
+    subroutine blend_i_0d1(x,m) ! in :interpoliepyc_alpha
+        real dimension(m) :: x
+        integer, optional,check(len(x)>=m),depend(x) :: m=len(x)
+    end subroutine blend_i_0d1
+    subroutine blend_101(r,x0,x1,x) ! in :interpoliepyc_alpha
+        real :: r
+        real :: x0
+        real :: x1
+        real :: x
+    end subroutine blend_101
+    subroutine calcrhox(tau,kappa,ndepth,rhox) ! in :interpoliepyc_alpha
+        real dimension(ndepth) :: tau
+        real dimension(ndepth),depend(ndepth) :: kappa
+        integer, optional,check(len(tau)>=ndepth),depend(tau) :: ndepth=len(tau)
+        real dimension(ndepth),depend(ndepth) :: rhox
+    end subroutine calcrhox
+    function rinteg(x,f,fint,n,start) ! in :interpoliepyc_alpha
+        real dimension(5000) :: x
+        real dimension(5000) :: f
+        real dimension(5000) :: fint
+        integer :: n
+        real :: start
+        real :: rinteg
+    end function rinteg
+    subroutine parcoe(f,x,a,b,c,n) ! in :interpoliepyc_alpha
+        real dimension(5000) :: f
+        real dimension(5000) :: x
+        real dimension(5000) :: a
+        real dimension(5000) :: b
+        real dimension(5000) :: c
+        integer :: n
+    end subroutine parcoe
+    subroutine calc_error(xinf,xsup,yinf,ysup,zinf,zsup,teff_ref,logg_ref,z_ref) ! in :interpoliepyc_alpha
+        real :: xinf
+        real :: xsup
+        real :: yinf
+        real :: ysup
+        real :: zinf
+        real :: zsup
+        real :: teff_ref
+        real :: logg_ref
+        real :: z_ref
+    end subroutine calc_error
+    function sevalsingle(u,x,y,n) ! in :interpoliepyc_alpha
+        real intent(in) :: u
+        real dimension(:),intent(in) :: x
+        real dimension(:),intent(in) :: y
+        integer intent(in) :: n
+        real :: sevalsingle
+    end function sevalsingle
+    subroutine fmmsplinesingle(x,y,b,c,d,n) ! in :interpoliepyc_alpha
+        real dimension(n) :: x
+        real dimension(n),depend(n) :: y
+        real dimension(n),depend(n) :: b
+        real dimension(n),depend(n) :: c
+        real dimension(n),depend(n) :: d
+        integer, optional,check(len(x)>=n),depend(x) :: n=len(x)
+    end subroutine fmmsplinesingle
+    subroutine resample(taus,taur,t,pe,pg,xit,rr,xkapref) ! in :interpoliepyc_alpha
+        real dimension(:,:) :: taus
+        real dimension(:,:) :: taur
+        real dimension(:,:) :: t
+        real dimension(:,:) :: pe
+        real dimension(:,:) :: pg
+        real dimension(:,:) :: xit
+        real dimension(:,:) :: rr
+        real dimension(:,:) :: xkapref
+    end subroutine resample
+end python module interpoliepyc_alpha
+
+! This file was auto-generated with f2py (version:1.21.5).
+! See http://cens.ioc.ee/projects/f2py2e/
