@@ -12,9 +12,9 @@ from . import utils
 
 _lpoint_max = 1000000 # hardcoded into turbospectrum spectrum.inc file, adopt this to match
 _ERASESTR= "                                                                             "
-_TURBO_DIR_ = '/home/alexji/lib/Turbospectrum2019/exec-v19.1' #46s on a 5000-5500A test
+#_TURBO_DIR_ = '/home/alexji/lib/Turbospectrum2019/exec-v19.1' #46s on a 5000-5500A test
 #_TURBO_DIR_ = '/home/alexji/lib/Turbospectrum2019/exec-gf-v19.1' #77s on a 5000-5500A test
-_TURBO_DIR_ = '/home/alexji/lib/Turbospectrum2019-ie/exec-v19.1-ie' #47s on a 5000-5500A test
+_TURBO_DIR_ = '/home/pthibodeaux/stellar_spectra/Turbospectrum_NLTE/exec' #47s on a 5000-5500A test
 
 def run_synth(wmin, wmax, dwl, *args,
               linelist=None,
@@ -150,6 +150,10 @@ def run_synth(wmin, wmax, dwl, *args,
                       atmosphere.vt,
                       atmosphere.spherical,
                       None,None,None,bsyn=False)
+        
+        print("modelopacname: ",modelopacname)
+        print("twd:",twd)
+
         # Run babsma
         sys.stdout.write('\r'+"Running Turbospectrum babsma_lu ...\r")
         sys.stdout.flush()
@@ -186,7 +190,7 @@ def run_synth(wmin, wmax, dwl, *args,
     else:
         shutil.copy(modelopac,twd)
         modelopacname= os.path.join(twd,os.path.basename(modelopac))
-
+    print("Babsma was run")
     # Now write the script file for bsyn_lu
     scriptfilename= os.path.join(twd,'bsyn.par')
     outfilename= os.path.join(twd,'bsyn.out')
@@ -214,6 +218,10 @@ def run_synth(wmin, wmax, dwl, *args,
     else:
         stdout= open('/dev/null', 'w')
         stderr= subprocess.STDOUT
+    
+    #print("twd:",twd)
+    #print("twd normpath:",os.path.normpath(twd))
+    #print("twd basename:",os.path.basename(os.path.normpath(twd)))
     try:
         p= subprocess.Popen([os.path.join(_TURBO_DIR_, 'bsyn_lu')],
                             cwd=twd,
@@ -223,7 +231,9 @@ def run_synth(wmin, wmax, dwl, *args,
         with open(os.path.join(twd,'bsyn.par'),'r') as parfile:
             for line in parfile:
                 p.stdin.write(line.encode('utf-8'))
+                print(line)
         stdout, stderr= p.communicate()
+        print(stderr)
     except subprocess.CalledProcessError:
         raise RuntimeError("Running bsyn_lu failed ...")
     finally:
@@ -232,10 +242,11 @@ def run_synth(wmin, wmax, dwl, *args,
             if os.path.dirname(turbosavefilename) == '':
                 turbosavefilename= os.path.join(os.getcwd(),turbosavefilename)
             try:
-                subprocess.check_call(['tar','cvzf',turbosavefilename,
-                                       os.path.basename(os.path.normpath(twd))])
-            except subprocess.CalledProcessError:
-                raise RuntimeError("Tar-zipping the Turbospectrum input and output failed; you will have to manually delete the temporary directory ...")
+                subprocess.check_call(['tar','-cvzf',turbosavefilename,
+                                      # os.path.basename(os.path.normpath(twd))])
+                                       os.path.normpath(twd)])
+            except subprocess.CalledProcessError: 
+                raise RuntimeError("Tar-zipping the Turbospectrum input and output failed; you will have to manually delete the temporary directory ...") 
         #    # Need to remove babsma.par, bc not removed above
         #    if os.path.exists(os.path.join(twd,'babsma.par')):
         #        os.remove(os.path.join(twd,'babsma.par'))
@@ -257,8 +268,12 @@ def run_synth(wmin, wmax, dwl, *args,
         sys.stdout.write('\r'+_ERASESTR+'\r')
         sys.stdout.flush()
 
+    print("Bsyn run.")
+
     # Now read the output
     turboOut= np.loadtxt(outfilename)
+    print("turboOut:",turboOut)
+    print("outfilename:",outfilename)
     # Clean up
     #if not debug:
     #    os.remove(outfilename)
